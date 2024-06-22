@@ -19,6 +19,9 @@ This module detects lips on images.
 
 This module uses InsightFace to get the landmarks of the lips produced by the predictions. It analyzes these points with a 2D DFT (Discrete Fourier Transform) to get the function representative of the movements of the mouth during speaking.
 
+![Curve Points](3d_plot_mounth.png)
+
+
 ## Data Analysis for Sound : speechReco.py
 
 This module interprets sound.
