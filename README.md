@@ -1,37 +1,39 @@
 # ReadLips
-AI model to read lips.
+AI model for lip reading.
 
-## Collecting the Data : detectAudio.py
+## Collecting the Data: detectAudio.py
 
 This module opens a window (webcam) and records frames and sound.
 
 - **Input**: webcam
-- **Output**: two files, one `.avi` for images and one `.wav` for soundtrack
+- **Output**: two files, one `.avi` for images and one `.wav` for soundtrack.
 
-## Data Analysis for Images : detectFace.py
+## Data Analysis for Images: detectFace.py
 
-This module detects lips on images.
+This module detects lips in images.
 
 - **Input**: image from video
 - **Output**: points of the lips
 
 ![Lips Points](result_img.jpg)
 
-This module uses InsightFace to get the landmarks of the lips produced by the predictions. It analyzes these points with a 2D DFT (Discrete Fourier Transform) to get the function representative of the movements of the mouth during speaking.
+This module uses InsightFace to obtain landmarks of the lips from predictions. It analyzes these points using a 2D DFT (Discrete Fourier Transform) to generate a function that represents mouth movements during speech.
 
-X variation are the variation of the x values of the points. 
-Y variation are the variation of the y values of the points. 
-The surface ploted is the result of the 2D DFT. 
-![Curve Points](3d_plot_mounth.png)
+- **X variation**: Variation in the x-values of the points.
+- **Y variation**: Variation in the y-values of the points.
+- The plotted surface represents the result of the 2D DFT.
 
+![DFT Plot](3d_plot_mouth.png)
 
-## Data Analysis for Sound : speechReco.py
+These two surfaces are saved along with the Fourier coefficients.
+
+## Data Analysis for Sound: speechReco.py
 
 This module interprets sound.
 
-- **Input**: wav file
+- **Input**: WAV file
 - **Output**: text (strings)
 
-This module uses pydub to detect the sentence of the soundtrack. The sentence is a string containing all the words of the sound. The soundtrack is plotted in matplotlib to visualize the data. It uses a Fourier analysis to interpret this data.
+This module uses pydub to detect the sentence from the soundtrack. The sentence is a string containing all the words spoken in the audio. The soundtrack is visualized using matplotlib. Fourier analysis is employed to interpret the data.
 
-![Curve Sound](soundtrack.png)
+![Soundwave Plot](soundtrack.png)
