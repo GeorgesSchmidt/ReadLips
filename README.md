@@ -1,34 +1,29 @@
 # ReadLips
-AI model to read lips. 
+AI model to read lips.
 
+## Collecting the Data : detectAudio.py
 
+This module opens a window (webcam) and records frames and sound.
 
-# Collecting the data : detectAudio.py
+- **Input**: webcam
+- **Output**: two files, one `.avi` for images and one `.wav` for soundtrack
 
-Module opening a window (webCam) and recording frames and sound. 
-input = webcam
-output = 2 files : one .avi for images one .wav for soundtrack. 
+## Data Analysis for Images : detectFace.py
 
-# Data analyse for images : detectFace.py
+This module detects lips on images.
 
-Module to detect lips on images. 
-input = image from video. 
-output = points of the lips. 
-![lips points](result_img.png)
+- **Input**: image from video
+- **Output**: points of the lips
 
+![Lips Points](result_img.jpg)
 
-This module use InsigthFace to get the landmarks of the lips produce by the predictions. 
-It analyse this points with a DFT2D to get the function representative of the mouvements of the mounth during speacking. 
+This module uses InsightFace to get the landmarks of the lips produced by the predictions. It analyzes these points with a 2D DFT (Discrete Fourier Transform) to get the function representative of the movements of the mouth during speaking.
 
-# Data analyse for sound = speechReco.py
+## Data Analysis for Sound : speechReco.py
 
-Module to interpret sound 
+This module interprets sound.
 
-input = wav file. 
-output = texte (strings). 
+- **Input**: wav file
+- **Output**: text (strings)
 
-This module use pydub to detect the sentence of the soundtrack. This sentence is a string containing all the words of the sound. 
-The soundtrack is plot in matplotlib to visualise the data. 
-It use a Fourier analysis to interpret this data. 
-
-
+This module uses pydub to detect the sentence of the soundtrack. The sentence is a string containing all the words of the sound. The soundtrack is plotted in matplotlib to visualize the data. It uses a Fourier analysis to interpret this data.
