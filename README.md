@@ -30,3 +30,5 @@ This module interprets sound.
 - **Output**: text (strings)
 
 This module uses pydub to detect the sentence of the soundtrack. The sentence is a string containing all the words of the sound. The soundtrack is plotted in matplotlib to visualize the data. It uses a Fourier analysis to interpret this data.
+
+![Curve Sound](soundtrack.png)
