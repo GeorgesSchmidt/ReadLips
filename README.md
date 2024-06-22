@@ -19,6 +19,9 @@ This module detects lips on images.
 
 This module uses InsightFace to get the landmarks of the lips produced by the predictions. It analyzes these points with a 2D DFT (Discrete Fourier Transform) to get the function representative of the movements of the mouth during speaking.
 
+X variation are the variation of the x values of the points. 
+Y variation are the variation of the y values of the points. 
+The surface ploted is the result of the 2D DFT. 
 ![Curve Points](3d_plot_mounth.png)
 
 
