@@ -23,7 +23,7 @@ This module uses InsightFace to obtain landmarks of the lips from predictions. I
 - **Y variation**: Variation in the y-values of the points.
 - The plotted surface represents the result of the 2D DFT.
 
-![DFT Plot](3d_plot_mouth.png)
+![DFT Plot](3d_plot_mounth.png)
 
 These two surfaces are saved along with the Fourier coefficients.
 
