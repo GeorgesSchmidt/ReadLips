@@ -44,7 +44,9 @@ This module uses pydub to detect the sentence from the soundtrack. The sentence 
 ## Deep learning : treatSignal.py
 
 Now we have 2 functions :  
+
 f(lips, t) represents the mouvement of the lips during the movie (time). 
+
 f(sound, t) represents wave sound during the movie (time). 
 
 These 2 functions are Fourier transforms : 2D DFT for lips, 1D FFT for sound. 
