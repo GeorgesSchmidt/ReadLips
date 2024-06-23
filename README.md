@@ -24,7 +24,7 @@ This module uses InsightFace to obtain landmarks of the lips from predictions. A
 - The plotted surface represents the result of the 2D DFT.
 - **Lips amplitude**: Graphs of the lips during the movie in red (original points) and black (result of the DFT).
 
-![DFT Plot](3d_plot_mouth.png)
+![DFT Plot](3d_plot_mounth.png)
 
 These plots are saved along with the Fourier coefficients.
 
