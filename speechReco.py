@@ -60,6 +60,8 @@ class SpeechRecognizer:
         
         # Créer le graphique de la forme d'onde
         plt.figure(figsize=(15, 4))
+        title = f'sentence detected : {self.sentence}'
+        plt.suptitle(title, fontsize=14)
         plt.subplot(1, 3, 1)
         plt.plot(times, samples, color='b')
         plt.title('Waveform')
