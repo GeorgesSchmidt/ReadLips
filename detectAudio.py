@@ -5,6 +5,7 @@ import threading
 import numpy as np
 import os
 
+
 class VideoAudioRecorder:
     def __init__(self, video_filename='output_video.mp4', audio_filename='output_audio.wav',
                  frame_width=640, frame_height=480, fps=25, audio_channels=1, audio_rate=44100,
