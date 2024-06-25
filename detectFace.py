@@ -5,14 +5,91 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from math import tau
 
+
 class DetectFace:
     def __init__(self, path) -> None:
         self.app = FaceAnalysis()
         self.app.prepare(ctx_id=0, det_size=(640, 640))
         self.path = path
         self.read_video()
-        self.interpolation()
-        self.analyse()
+        self.show_3d()
+    
+    def read_video(self):
+        cap = cv2.VideoCapture(self.path)
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        n = 0
+        self.arr_img, self.pts_3D = [], []
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if ret:
+                pred = self.get_pred(frame)
+                face = None
+                if pred is not None:
+                    lips, pts, box, pts_3D = pred
+                    self.pts_3D.append(pts_3D)
+                    
+                    x, y, w, h = box
+                    cv2.rectangle(frame, (x, y), (w, h), (0, 255, 0), 2)
+                    self.arr_img.append(frame)
+                key = cv2.waitKey(1)
+                if key == 27:
+                    break
+                if n == 10:
+                    break
+                n += 1
+        cap.release()
+        cv2.destroyAllWindows()
+
+        
+        
+    def get_pred(self, frame):
+        pred = self.app.get(frame)
+        print(pred)
+        if len(pred) == 1:
+            pred = pred[0]
+            box = np.array(pred['bbox']).astype(int)
+            pts = np.array(pred['landmark_2d_106']).astype(int)
+            pts_3d = np.array(pred['landmark_3d_68']).astype(float)
+            
+            lips =  pts[52:72]
+            return lips, pts, box, pts_3d
+        
+    def show_3d(self):
+        self.fig = plt.figure(figsize=(15, 5))
+        self.ax0 = self.fig.add_subplot(121)
+        self.ax1 = self.fig.add_subplot(122, projection='3d')
+        self.animation = FuncAnimation(self.fig, self.update, frames=range(len(self.arr_img)), interval=200)
+        plt.show()
+
+        
+    def update(self, frame):
+        self.ax0.clear()
+        title = f'image {frame} / {len(self.arr_img)}'
+        print(title)
+        img = self.arr_img[frame]
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        self.ax0.imshow(img)
+        
+        self.ax1.clear()
+        points = self.pts_3D[frame]
+        y = [v[0] for v in points]
+        x = [v[1] for v in points]
+        z = [v[2] for v in points]
+        self.ax1.scatter3D(x, y, z)
+
+        
+
+
+    
+class DetectFace1:
+    def __init__(self, path) -> None:
+        self.app = FaceAnalysis()
+        self.app.prepare(ctx_id=0, det_size=(640, 640))
+        self.path = path
+        self.read_video()
+        self.show_3d()
+        # self.interpolation()
+        # self.analyse()
         
     def read_video(self):
         cap = cv2.VideoCapture(self.path)
@@ -20,8 +97,10 @@ class DetectFace:
         
         
         n = 0
+        self.arr_img = []
         self.pts_3D = []
         self.arr_lips = []
+        self.roi = []
         self.height = -1
         self.width = -1
         while cap.isOpened():
@@ -30,34 +109,19 @@ class DetectFace:
                 pred = self.get_pred(frame)
                 face = None
                 if pred is not None:
-                    lips, pts, box = pred
+                    lips, pts, box, pts_3D = pred
+                    self.pts_3D.append(pts_3D)
+                    self.roi.append(box)
                     x, y, w, h = box
                     cv2.rectangle(frame, (x, y), (w, h), (0, 255, 0), 2)
-                    if self.height < h:
-                        self.height = h
-                    if self.width < w:
-                        self.width = w
                     
-                    hull = cv2.convexHull(lips, returnPoints=True)
-                    arr = []
-                    for [p] in hull:
-                        x, y = (p[0]-box[0])/box[2], (p[1]-box[1])/box[3]
-                        arr.append([x, y])
-                    
-                    self.arr_lips.append(arr)
-                    
-                    cv2.polylines(frame, [hull], True, (255, 255, 0), 4)
-                    
-                    for p in pts:
-                        cv2.circle(frame, p, 2, (255, 255, 255), -1)
-                    for p in lips:
-                        cv2.circle(frame, p, 5, (255, 0, 255), -1)
-                    
-                cv2.imshow('', frame)
+                     
+                
+                self.arr_img.append(frame)
                 key = cv2.waitKey(1)
                 if key == 27:
                     break
-                if n == frame_count-1:
+                if n == 10:
                     break
                 n += 1
         cap.release()
@@ -66,20 +130,50 @@ class DetectFace:
         
     def get_pred(self, frame):
         pred = self.app.get(frame)
+        print(pred)
         if len(pred) == 1:
             pred = pred[0]
             box = np.array(pred['bbox']).astype(int)
             pts = np.array(pred['landmark_2d_106']).astype(int)
+            pts_3d = np.array(pred['landmark_3d_68']).astype(float)
+            
             lips =  pts[52:72]
-            return lips, pts, box
+            return lips, pts, box, pts_3d
+        
+    def show_3d(self):
+        self.fig = plt.figure(figsize=(15, 5))
+        self.ax0 = self.fig.add_subplot(121)
+        self.ax1 = self.fig.add_subplot(122, projection='3d')
+        self.animation = FuncAnimation(self.fig, self.update, frames=range(len(self.arr_img)), interval=200)
+        plt.show()
+        
+    def update(self, frame):
+        self.ax0.clear()
+        title = f'image {frame} / {len(self.arr_img)}'
+        print(title)
+        img = self.arr_img[frame]
+        self.ax0.imshow(img)
+        
+        self.ax1.clear()
+        points = self.pts_3D[frame]
+        x = [v[0] for v in points]
+        y = [v[1] for v in points]
+        z = [v[2] for v in points]
+        self.ax1.scatter3D(x, y, z)
+            
+        
+        
+        
         
     def interpolation(self):
         h = len(self.arr_lips)
-        w = 20
+        w = 100
         self.mat_lips = np.zeros((h, w, 2), float)
         for ind, line in enumerate(self.arr_lips):
             x = [v[0] for v in line]
             y = [v[1] for v in line]
+            x.append(x[0])
+            y.append(y[0])
             angle = np.linspace(0, tau, len(x))
             xvals = np.linspace(0, tau, w)
             vx = np.interp(xvals, angle, x)
@@ -97,14 +191,14 @@ class DetectFace:
                 mat_x[i][j] = p[1]
                 mat_y[i][j] = p[0]
                 
-        coef_x, idft_x = self.calculCoef2D(mat_x, order=5)
+        coef_x, idft_x = self.calculCoef2D(mat_x, order=6)
         coef_y, idft_y = self.calculCoef2D(mat_y, order=4)
-        mat_3D = np.zeros((h, w, 2), float)
+        self.mat_3D = np.zeros((h, w, 2), float)
         for i in range(h):
             for j in range(w):
                 x = idft_x[i][j]
                 y = idft_y[i][j]
-                mat_3D[i][j] = [y, x]
+                self.mat_3D[i][j] = [y, x]
         fig = plt.figure(figsize=(15, 5))
         ax0 = fig.add_subplot(131, projection='3d')
         ax1 = fig.add_subplot(132, projection='3d')
@@ -116,7 +210,7 @@ class DetectFace:
         self.plot_surface(idft_x, ax0)
         self.plot_surface(idft_y, ax1)
         self.plot_lips(self.mat_lips, ax2, color='red')
-        self.plot_lips(mat_3D, ax2, color='black')
+        self.plot_lips(self.mat_3D, ax2, color='black')
         fig.savefig('3d_plot_mounth.png')
         plt.show()
         
@@ -212,5 +306,5 @@ class DetectFace:
        
         
 if __name__=='__main__':
-    path = 'output_video.mp4'
+    path = 'videos/ThomasPesquier.mp4'
     DetectFace(path)
