@@ -6,12 +6,15 @@ import numpy as np
 class SpeechRecognizer:
     def __init__(self, audio_file):
         self.audio_file = audio_file
-        self.sentence = None
+        self.sentence = self.recognize_from_audio_file()
+        if self.sentence is not None:
+            print('sentence = ', self.sentence)
+            self.plot_audio_waveform()
 
     def recognize_from_audio_file(self):
         # Créer un objet Recognizer
         r = sr.Recognizer()
-
+        
         try:
             # Utiliser le fichier temporaire pour la reconnaissance vocale
             with sr.AudioFile(self.audio_file) as source:
@@ -19,7 +22,7 @@ class SpeechRecognizer:
 
             # Reconnaissance vocale avec Google Web Speech API
             text = r.recognize_google(audio_data, language="fr-FR")
-            self.sentence = text
+            
             return text
         except sr.UnknownValueError:
             print("Google Web Speech API n'a pas pu comprendre l'audio")
@@ -105,13 +108,13 @@ class SpeechRecognizer:
 
 # Exemple d'utilisation de la classe SpeechRecognizer avec la méthode ajoutée
 if __name__ == "__main__":
-    audio_file = "output_audio.wav"
+    audio_file = 'videos/short_output_audio.wav'
     recognizer = SpeechRecognizer(audio_file)
     
-    # Afficher le texte reconnu
-    recognized_text = recognizer.recognize_from_audio_file()
-    if recognized_text:
-        print(f"Texte reconnu : {recognized_text}")
+    # # Afficher le texte reconnu
+    # recognized_text = recognizer.recognize_from_audio_file()
+    # if recognized_text:
+    #     print(f"Texte reconnu : {recognized_text}")
     
-    # Afficher la forme d'onde audio
-    recognizer.plot_audio_waveform()
+    # # Afficher la forme d'onde audio
+    # recognizer.plot_audio_waveform()
