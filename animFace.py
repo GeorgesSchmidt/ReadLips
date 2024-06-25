@@ -21,19 +21,20 @@ class Anim(Fourier):
         points = self.matPoints[frame]
         y = [v[0] for v in points]
         x = [v[1] for v in points]
-        x = np.array(x, x[0])
-        y = np.array(y, y[0])
+        x.append(x[0])
+        y.append(y[0])
         self.ax.plot(x, y)
         points = self.mat_3D[frame]
         y = [v[0] for v in points]
         x = [v[1] for v in points]
-        x = np.array(x, x[0])
-        y = np.array(y, y[0])
+        x.append(x[0])
+        y.append(y[0])
         self.ax.plot(x, y)
         self.ax.axhline(y=0, color='k', linewidth=1) 
         self.ax.axvline(x=0, color='k', linewidth=1)
         self.ax.set_xlim(-1, 1)
         self.ax.set_ylim(-1, 1)
+        self.ax.invert_yaxis()
         
     
         

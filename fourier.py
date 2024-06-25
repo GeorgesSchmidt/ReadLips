@@ -21,8 +21,8 @@ class Fourier(Interpolate):
                 mat_x[i][j] = p[0]
                 mat_y[i][j] = p[1]
                 
-        coef_x, idft_x = self.calculCoef2D(mat_x, order=4)
-        coef_y, idft_y = self.calculCoef2D(mat_y, order=4)
+        coef_x, idft_x = self.calculCoef2D(mat_x, order=10)
+        coef_y, idft_y = self.calculCoef2D(mat_y, order=10)
         
         self.mat_3D = np.zeros((h, w, 2), float)
         for i in range(h):
