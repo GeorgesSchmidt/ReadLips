@@ -4,6 +4,7 @@ import os
 from speechReco import SpeechRecognizer
 class TreatSound(SpeechRecognizer):
     def __init__(self, path) -> None:
+        super().__init__(path)
         self.path = path
         
         
