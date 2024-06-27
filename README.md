@@ -5,6 +5,8 @@ L'objectif de ce repo est, dans un premier temps, de récolter et d'analyser les
 
 On analyse alors le mouvent des lèvres sur l'image par rapport au temps (déroulé du film) en utilisant des modules de vision par ordinateur (InsightFace) et le son par des modules de NLP (interprétation du son). 
 
+![Lips Points](figure_frame_1.jpg)
+
 **Data extraction**
 
 Le module createData.py recoit un film en entrée et applique une détection de visage à l'aide d'Insight Face afin d'avoir les points du visage dont les lèvres. 
