@@ -43,6 +43,7 @@ class Analyse(LoadDatas):
     def __init__(self, directory) -> None:
         super().__init__(directory)
         self.plot_values()
+        self.plot_3d()
         
     def plot_values(self):
         data = self.data[0]
@@ -92,7 +93,51 @@ class Analyse(LoadDatas):
         total = np.sort(np.concatenate((minima_indices, maxima_indices)))
         
         return minima_indices, total
+    
+    def plot_3d(self):
+        d, f = self.num
+        h, w = self.data.shape[:2]
+        mat_x, mat_y = self.data[:, d:f, 0], self.data[:, d:f, 1]
+        h = 10
+        fig = plt.figure(figsize=(15, 5))
+        ax0 = fig.add_subplot(131, projection='3d')
+        ax1 = fig.add_subplot(132, projection='3d')
+        ax2 = fig.add_subplot(133, projection='3d')
+        ax0.set_title('x variation during time')
+        ax1.set_title('y variation during time')
+        ax2.set_title('lips')
+        self.plot_mat(mat_x, ax0)
+        self.plot_mat(mat_y, ax1)
+        mat = cv2.merge([mat_x, mat_y])
+        h, w = mat.shape[:2]
+        h = 10
+        for i in range(h):
+            x, y, z = [], [], []
+            for j in range(w):
+                p = mat[i][j]
+                x.append(p[0])
+                y.append(p[1])
+                z.append(i)
+            ax2.plot3D(x, z, y, color='red')
+            
+        plt.show()
+        fig.savefig('plot_3d_lips.png')
 
+    def plot_mat(self, mat, ax, color='black'):
+        h, w = mat.shape[:2]
+        h = 10
+        angle = np.linspace(0, tau, w)
+        for i in range(h):
+            x, y, z = [], [], []
+            for j in range(w):
+                v = mat[i][j]
+                x.append(angle[j])
+                y.append(i)
+                z.append(v)
+            ax.plot3D(x, y, z, color=color)
+        ax.set_xlabel(r'Angle $2\pi$')
+        ax.set_ylabel('images')
+        
         
         
 class ReadLips(LoadDatas):
