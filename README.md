@@ -39,7 +39,7 @@ En dessinant des lignes continues entre les points des lèvres, on remarque que 
 
 La première boucle défini les points du bord supérieur de la lèvre, la deuxième défini les points du bord inférieur de la lèvre. 
 
-La courbe en y par rapport à 2*np.pi (variation de l'angle) présente donc 4 pics (min max de chaque boucle). 
+La courbe en x marque 2 pics : un pour chaque groupe (bord supérieur et bord inférieur) des lèvres. 
 
 Mat_x et mat_y représente les variations des amplitudes durant le temps (nb d'images). 
 
@@ -103,7 +103,7 @@ On visualise aini les sons forts (les mots) et les sons faibles (les silences).
 
 En supprimant les amplitudes faibles, on défini aussi un ordre constant quelque soit le fichier son. 
 
-
+![Lips Points](soundtrack.png)
 
 
 
