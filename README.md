@@ -5,12 +5,12 @@ L'objectif de ce repo est, dans un premier temps, de récolter et d'analyser les
 
 On analyse alors le mouvent des lèvres sur l'image par rapport au temps (déroulé du film) en utilisant des modules de vision par ordinateur (InsightFace) et le son par des modules de NLP (interprétation du son). 
 
-![Lips Points](figure_frame_1.png)
-
 **Data extraction**
 
 Le module createData.py recoit un film en entrée et applique une détection de visage à l'aide d'Insight Face afin d'avoir les points du visage dont les lèvres. 
-InsightFace prédit 60 points de visage, toujours classés dans le meême ordre. 
+InsightFace prédit 60 points de visage, toujours classés dans le même ordre. 
+
+![Lips Points](figure_frame_1.png)
 
 Les lèvres sont les points de la liste entre les numéros 48 et 68. 
 
@@ -56,6 +56,9 @@ L'interpolation se fait d'abord sur le nombre de points en passant de 20 points 
 Pour l'interpolation en h, on utilise gridData qui est une méthode fournie par Scipy. On passe alors de 1280 images à nb_mots (ici 100 pour l'exemple). 
 
 On peut visualiser sous MatplotLib 3D le résultat de cette interpolation. 
+
+![Lips Points](interpolation.png)
+
 
 ***3 data interpretation : 2D-DFT***
 
