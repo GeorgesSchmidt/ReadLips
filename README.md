@@ -31,6 +31,8 @@ Ces coordonnées sont visualisées avec Matplotlib 3D avec pour axes :
 
 En dessinant des lignes continues entre les points des lèvres, on remarque que la bouche est représentée par une double boucle. La première boucle définit les points du bord supérieur de la lèvre, la deuxième définit les points du bord inférieur de la lèvre. La courbe en x marque deux pics : un pour chaque groupe (bord supérieur et bord inférieur) des lèvres. `mat_x` et `mat_y` représentent les variations des amplitudes durant le temps (nombre d'images).
 
+![Lips Points](coordLips.png)
+
 En effet, le son sera caractérisé par des "mots" (amplitudes fortes) et des "silences" (amplitudes faibles).
 
 ### **2. Interpolation des données : correction des dimensions**
