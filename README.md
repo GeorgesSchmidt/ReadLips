@@ -80,6 +80,9 @@ On obtient alors en sortie une tranformée de Fourier représentant les amplitud
 
 Ce qui est intéressant avec cette interpretation par DFT est que l'on peut définir une constante, quelque soit le film, qui soit satisfaisante pour représenter le mouvement des lèvres. 
 
+![Lips Points](fourier.png)
+
+
 Le fait de fixer le nombre de dimensions de la sortie permet aussi de préparer la data pour un apprentissage en deep-learning. 
 
 **Data cleaning sound**
