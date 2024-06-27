@@ -21,6 +21,7 @@ class LoadDatas:
                 self.data = np.load(p)
             if path.endswith('.wav'):
                 samplerate, data = wavfile.read(p)
+                self.audio_file = p
             if path.endswith('.mp4'):
                 self.cap = cv2.VideoCapture(p)
             

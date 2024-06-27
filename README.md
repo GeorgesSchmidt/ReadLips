@@ -69,7 +69,9 @@ Le fait de fixer le nombre de dimensions de la sortie permet aussi de préparer 
 
 ## **Data Cleaning Sound**
 
-Le module `sound.py` permet d'analyser le fichier `.wav`. Il extrait les données du son et les représente par rapport au temps (durée du film), puis les affiche à l'écran. Il interprète ce son (SpeechRecognition) afin de créer une chaîne de caractères qui donne la sémantique de ce qui a été dit sur cette bande son. En splittant cette chaîne de caractères par rapport aux espaces entre les mots, on définit le nombre de "mots" et le nombre de silences ("esp").
+Le module `speechReco.py` permet d'analyser le fichier `.wav`. Il extrait les données du son et les représente par rapport au temps (durée du film), puis les affiche à l'écran. Il interprète ce son (SpeechRecognition) afin de créer une chaîne de caractères qui donne la sémantique de ce qui a été dit sur cette bande son. En splittant cette chaîne de caractères par rapport aux espaces entre les mots, on définit le nombre de "mots" et le nombre de silences ("esp").
+
+![Lips Points](soundtrack_interp.png)
 
 En appliquant une interpolation par `np.interp` sur le graphique du son, on obtient les phases de son par chacun des mots et des silences de la phrase prononcée. Enfin, une analyse par transformée de Fourier (FFT) permet de visualiser l'image spectrale du son. On visualise ainsi les sons forts (les mots) et les sons faibles (les silences). En supprimant les amplitudes faibles, on définit aussi un ordre constant, quel que soit le fichier son.
 
