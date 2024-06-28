@@ -10,9 +10,9 @@ class Fourier(Interpolation):
         super().__init__(directory)
         self.fourier()
         
-    def fourier(self):
+    def fourier(self, order_x=5, order_y=5):
         h, w = self.matPoints.shape[:2]
-        
+        print('order', order_x, order_y)
         mat_x = np.zeros((h, w), float)
         mat_y = np.zeros((h, w), float)
         for i in range(h):
@@ -21,24 +21,24 @@ class Fourier(Interpolation):
                 mat_x[i][j] = p[0]
                 mat_y[i][j] = p[1]
                 
-        coef_x, idft_x = self.calculCoef2D(mat_x, order=10)
-        coef_y, idft_y = self.calculCoef2D(mat_y, order=10)
-        
+        coef_x, idft_x = self.calculCoef2D(mat_x, order=order_x)
+        coef_y, idft_y = self.calculCoef2D(mat_y, order=order_y)
+        self.mat_fourier = [coef_x, coef_y]
         self.mat_3D = np.zeros((h, w, 2), float)
         for i in range(h):
             for j in range(w):
                 x = idft_x[i][j]
                 y = idft_y[i][j]
                 self.mat_3D[i][j] = [x, y]
-        fig = plt.figure(figsize=(15, 5))
-        ax0 = fig.add_subplot(121, projection='3d')
-        ax1 = fig.add_subplot(122, projection='3d')
-        self.plot_matrice(mat_x, ax0, title='X variation')
-        self.plot_matrice(mat_y, ax1, title='Y variation')
-        self.plot_surface(idft_x, ax0)
-        self.plot_surface(idft_y, ax1)
-        plt.show()
-        fig.savefig('fourier.png')
+        # fig = plt.figure(figsize=(15, 5))
+        # ax0 = fig.add_subplot(121, projection='3d')
+        # ax1 = fig.add_subplot(122, projection='3d')
+        # self.plot_matrice(mat_x, ax0, title='X variation')
+        # self.plot_matrice(mat_y, ax1, title='Y variation')
+        # self.plot_surface(idft_x, ax0)
+        # self.plot_surface(idft_y, ax1)
+        # plt.show()
+        # fig.savefig('fourier.png')
         
     def calculCoef2D(self, img, order=4):
         dft_result = cv2.dft(img, flags=cv2.DFT_COMPLEX_OUTPUT)
@@ -61,17 +61,18 @@ class Fourier(Interpolation):
 
         # Calculer l'inverse de la transformée de Fourier discrète 2D avec le masque
         idft_result = cv2.idft(fft_ifft_shift, flags=cv2.DFT_SCALE | cv2.DFT_REAL_OUTPUT)
-        print('coef', idft_result.shape)
+        #print('coef', idft_result.shape)
 
         nonzero_indices = np.nonzero(mask[:, :, 0])
-        print(fft_ifft_shift.shape)
+        #print(fft_ifft_shift.shape)
 
         # Extraire les coefficients non nuls de la DFT
         nonzero_coefficients = dft_result[nonzero_indices]
         modified_coefficients = [(x, y, fft_shift[x, y, 0] + 1j * fft_shift[x, y, 1]) for x, y in zip(nonzero_indices[0], nonzero_indices[1])]
-        print(len(modified_coefficients))
+        #print(len(modified_coefficients))
 
         return fft_shift, idft_result
+    
     
     def plot_surface(self, mat, ax):
         h, w = mat.shape[:2]

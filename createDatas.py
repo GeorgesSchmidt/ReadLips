@@ -6,6 +6,7 @@ import io
 from moviepy.editor import VideoFileClip
 import imageio
 from tqdm import tqdm
+import argparse
     
 class DetectFace:
     def __init__(self, input_path, output_path) -> None:
@@ -85,9 +86,15 @@ class DetectFace:
         audio.write_audiofile(audio_path, codec='pcm_s16le')
         
 
-    
-
 if __name__=='__main__':
-    path = 'short_thoma.mp4'
-    audio = 'short_thom_audio.wav'
-    DetectFace(input_path=path, output_path=audio)
+    parser = argparse.ArgumentParser(description='Face Detection and Sound Extraction')
+    parser.add_argument('input', type=str, help='Input video filename located in the "videos" directory')
+    parser.add_argument('output', type=str, help='Output audio filename located in the "datas" directory')
+
+    args = parser.parse_args()
+
+    input_path = args.input
+    output_path = args.output
+    print(input_path)
+
+    #DetectFace(input_path=input_path, output_path=output_path)
