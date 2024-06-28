@@ -79,7 +79,13 @@ Les premiers coeficients i=0 donne les coordonnées du centre d'inertie de la co
 
 Les coeficients a et b pour i=1 donne les amplitudes maximales et c'est ce qui nous intéresse pour l'analyse des lèvres. 
 
-![Lips Points](orderFourier.png)
+Comme il s'agit d'un modèle 2D, on a 2 ordres : l'un pour la modélisation dans le sens de la hauteur (le temps) dit `order_h` et l'autre dans le sens de la largeur `order_w`. 
+
+
+
+![Lips Points](order_w.png)
+
+![Lips Points](order_h.png)
 
 
 En effet, lorsqu'une personne parle pour émettre un son la bouche s'ouvre et l'amplitude en y augmente. 
@@ -89,10 +95,6 @@ A l'inverse, lorsque la personne se tait, la bouche se ferme créant une amplitu
 Evidement, les amplitudes en x sont importantes aussi car elle représentent la largeur de l'ouverture de la bouche. 
 
 L'intérêt de la modélisation par Fourier est de pouvoir analyser les variations de ces amplitudes en évaluant les phases (dans le temps) où la bouche émet un son (forte amplitudes) et les phases où la bouche se tait (faibles amplitudes). 
-
-Pour visualiser cela il suffit d'analyser les amplitudes maximales à chaque image dans le temps. 
-
-
 
 
 ## **Data Cleaning Sound**

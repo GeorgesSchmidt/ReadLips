@@ -10,14 +10,14 @@ class Fourier(Interpolation):
         super().__init__(directory)
         self.fourier()
         
-    def fourier(self, order_x=5, order_y=5):
-        h, w = self.matPoints.shape[:2]
+    def fourier(self, order_x=40, order_y=20, show=True):
+        h, w = self.lips.shape[:2]
         print('order', order_x, order_y)
         mat_x = np.zeros((h, w), float)
         mat_y = np.zeros((h, w), float)
         for i in range(h):
             for j in range(w):
-                p = self.matPoints[i][j]
+                p = self.lips[i][j]
                 mat_x[i][j] = p[0]
                 mat_y[i][j] = p[1]
                 
@@ -30,15 +30,17 @@ class Fourier(Interpolation):
                 x = idft_x[i][j]
                 y = idft_y[i][j]
                 self.mat_3D[i][j] = [x, y]
-        # fig = plt.figure(figsize=(15, 5))
-        # ax0 = fig.add_subplot(121, projection='3d')
-        # ax1 = fig.add_subplot(122, projection='3d')
-        # self.plot_matrice(mat_x, ax0, title='X variation')
-        # self.plot_matrice(mat_y, ax1, title='Y variation')
-        # self.plot_surface(idft_x, ax0)
-        # self.plot_surface(idft_y, ax1)
-        # plt.show()
-        # fig.savefig('fourier.png')
+        
+        if show:
+            fig = plt.figure(figsize=(15, 5))
+            ax0 = fig.add_subplot(121, projection='3d')
+            ax1 = fig.add_subplot(122, projection='3d')
+            self.plot_matrice(mat_x, ax0, title='X variation')
+            self.plot_matrice(mat_y, ax1, title='Y variation')
+            self.plot_surface(idft_x, ax0)
+            self.plot_surface(idft_y, ax1)
+            plt.show()
+            fig.savefig('fourier.png')
         
     def calculCoef2D(self, img, order=4):
         dft_result = cv2.dft(img, flags=cv2.DFT_COMPLEX_OUTPUT)
