@@ -30,7 +30,7 @@ class AnalyseLips(Fourier):
             ax[i].invert_yaxis()
             
         plt.show()
-        fig.suptitle('order_w : lissage du contour des lèvres', fontsize=5)
+        fig.suptitle('order_w : lissage du contour des lèvres', fontsize=15)
         plt.tight_layout(rect=[0, 0, 1, 0.8])  
 
         fig.savefig('order_w.png')
@@ -49,7 +49,7 @@ class AnalyseLips(Fourier):
             title = f'order {order}'
             ax[i].set_title(title)
             
-        fig.suptitle('order_h : lissage dans le temps', fontsize=5)
+        fig.suptitle('order_h : lissage dans le temps', fontsize=15)
         plt.tight_layout(rect=[0, 0, 1, 0.95])  
         plt.show()
         fig.savefig('order_h.png')
