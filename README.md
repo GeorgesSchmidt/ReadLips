@@ -51,9 +51,9 @@ On peut visualiser sous MatplotLib 3D le résultat de cette interpolation.
 
 ![Lips Points](interpolation.png)
 
-### **3. Interprétation des données : 2D-DFT**
+### **3. Modele mathématique : 2D-DFT**
 
-Les amplitudes de mouvement des lèvres peuvent être représentées aisément avec une transformée de Fourier en deux dimensions (2D-DFT), très utilisée en traitement d'image. Cette transformée est particulièrement adaptée à la modélisation mathématique des amplitudes de mouvement.
+Les amplitudes de mouvement des lèvres peuvent être représentées aisément avec une transformée de Fourier en deux dimensions (2D-DFT), très utilisée en traitement d'image. Cette transformée est particulièrement adaptée à la modélisation mathématique des amplitudes de mouvement. 
 
 On travaille alors avec des nombres complexes, où la partie réelle représente la variation en x et la partie imaginaire la variation en y. En calculant les amplitudes de ces nombres, on affiche l'image spectrale, ce qui permet d'observer les amplitudes fortes (au centre de l'image spectrale) et les amplitudes faibles (aux bords de l'image spectrale). En appliquant un masque à cette image, on supprime les amplitudes faibles.
 
@@ -61,11 +61,39 @@ En sortie, on obtient un pourtour des lèvres lissé, donc plus propre schémati
 
 On obtient alors une transformée de Fourier représentant les amplitudes de mouvement des lèvres par rapport au temps, avec des dimensions de matrice fixes, définies par l'ordre choisi pour la transformée.
 
-Ce qui est intéressant avec cette interprétation par DFT, c'est qu'on peut définir une constante, quel que soit le film, qui soit satisfaisante pour représenter le mouvement des lèvres.
+Ce qui est intéressant avec cette interprétation par DFT, c'est qu'on peut définir une constante d'ordre, quel que soit le film, qui soit satisfaisante pour représenter le mouvement des lèvres.
 
 ![Lips Points](fourier.png)
 
 Le fait de fixer le nombre de dimensions de la sortie permet aussi de préparer les données pour un apprentissage en deep learning.
+
+### **4. Interprétation du résultat de la DFT**
+
+Une transformée de Fourier est un modèle mathématique qui, comme tout modèle, modèlise des données par des coeficients. 
+
+![Lips Points](FourierFormula.png)
+
+Plus le nombre de coeficients est important `on parle d'ordre plutot que degres`, plus la fonction sera callée aux données. 
+
+Les premiers coeficients i=0 donne les coordonnées du centre d'inertie de la courbe. 
+
+Les coeficients a et b pour i=1 donne les amplitudes maximales et c'est ce qui nous intéresse pour l'analyse des lèvres. 
+
+![Lips Points](orderFourier.png)
+
+
+En effet, lorsqu'une personne parle pour émettre un son la bouche s'ouvre et l'amplitude en y augmente. 
+
+A l'inverse, lorsque la personne se tait, la bouche se ferme créant une amplitude en y plus faible. 
+
+Evidement, les amplitudes en x sont importantes aussi car elle représentent la largeur de l'ouverture de la bouche. 
+
+L'intérêt de la modélisation par Fourier est de pouvoir analyser les variations de ces amplitudes en évaluant les phases (dans le temps) où la bouche émet un son (forte amplitudes) et les phases où la bouche se tait (faibles amplitudes). 
+
+Pour visualiser cela il suffit d'analyser les amplitudes maximales à chaque image dans le temps. 
+
+
+
 
 ## **Data Cleaning Sound**
 
@@ -76,3 +104,7 @@ Le module `speechReco.py` permet d'analyser le fichier `.wav`. Il extrait les do
 En appliquant une interpolation par `np.interp` sur le graphique du son, on obtient les phases de son par chacun des mots et des silences de la phrase prononcée. Enfin, une analyse par transformée de Fourier (FFT) permet de visualiser l'image spectrale du son. On visualise ainsi les sons forts (les mots) et les sons faibles (les silences). En supprimant les amplitudes faibles, on définit aussi un ordre constant, quel que soit le fichier son.
 
 ![Lips Points](soundtrack.png)
+
+### **3. Synchronisation des données **
+
+
