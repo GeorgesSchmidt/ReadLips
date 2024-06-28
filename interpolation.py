@@ -87,7 +87,7 @@ class Interpolation(LoadDatas):
 
         # a = np.arange(minA, maxA, 1.)
         a = np.linspace(minA, maxA, 100)
-        z = np.linspace(minZ, maxZ, 10)
+        z = np.linspace(minZ, maxZ, 100)
        
         points = np.stack((A.flatten(), Z.flatten()), axis=1)
 
