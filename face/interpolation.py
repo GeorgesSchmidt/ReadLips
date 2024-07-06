@@ -2,43 +2,16 @@ import cv2
 import numpy as np
 import os
 import io
-from readLips import LoadDatas
+from face.correctLips import *
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from math import tau
 
-class Interpolation(LoadDatas):
+class Interpolation(CorrectLips):
     def __init__(self, directory) -> None:
         super().__init__(directory)
-        self.get_lips()
         self.interpolate()
-        self.show_result()
-        
-    def get_lips(self):
-        h, w = self.data.shape[:2]
-        d, f = self.num
-        self.lips = np.zeros((h, 20, 2), float)
-        for i in range(h):
-            lips = self.data[i][d:f]
-            for j, p in enumerate(lips):
-                x, y = p[:2]
-                self.lips[i][j] = [x, y]
-                
-        h, w = self.lips.shape[:2]
-        for i in range(h):
-            x, y = [], []
-            for j in range(w):
-                p = self.lips[i][j]
-                x.append(p[0])
-                y.append(p[1])
-            c_x, c_y = np.mean(x), np.mean(y)
-            for j in range(w):
-                p = self.lips[i][j]
-                x, y = p[0]-c_x, p[1]-c_y
-                self.lips[i][j] = [x, y]
-                
-        
-   
+        #self.show_result()
         
         
     def interpolate(self):
@@ -52,10 +25,10 @@ class Interpolation(LoadDatas):
                 y.append(p[1])
                 z.append(i)
             angle = np.linspace(0, tau, len(x))
-            xvals = np.linspace(0, tau, 100)
+            xvals = np.linspace(0, tau, 50)
             vx = np.interp(xvals, angle, x)
             vy = np.interp(xvals, angle, y)
-            vz = [i]*100
+            vz = [i]*50
             arr_angle.append(xvals)
             arr_x.append(vx)
             arr_y.append(vy)
@@ -64,15 +37,17 @@ class Interpolation(LoadDatas):
         res_x, a, z_x = self.getMatInterpol(arr_angle, arr_z, arr_x)
         res_y, a, z_y = self.getMatInterpol(arr_angle, arr_z, arr_y)
         h, w = res_x.shape[0], res_x.shape[1]
-        self.matPoints = np.empty((h, w, 3), float)
+        self.matPoints = np.empty((h, w, 2), float)
         print('interpolation', self.matPoints.shape)
         
         for i in range(h):
-            z = z_x[i]
-            line = []
             for j in range(w):
                 x, y = res_x[i][j], res_y[i][j]
-                self.matPoints[i][j] = [x, y, z]
+                self.matPoints[i][j] = [x, y]
+                
+        title = f'./datas/mat_interp.npy'
+        data_path = os.path.join(os.getcwd(), 'datas', 'mat_interp.npy')
+        np.save(title, self.matPoints)
 
                 
     def getMatInterpol(self, arr_angle, arr_z, arr):
@@ -86,8 +61,8 @@ class Interpolation(LoadDatas):
         minZ, maxZ = np.min(Z), np.max(Z)
 
         # a = np.arange(minA, maxA, 1.)
-        a = np.linspace(minA, maxA, 100)
-        z = np.linspace(minZ, maxZ, 100)
+        a = np.linspace(minA, maxA, 50)
+        z = np.linspace(minZ, maxZ, 326340) #for sound 326340
        
         points = np.stack((A.flatten(), Z.flatten()), axis=1)
 
@@ -117,10 +92,12 @@ class Interpolation(LoadDatas):
         h, w = self.lips.shape[:2]
         ax0 = fig.add_subplot(121, projection='3d')
         ax1 = fig.add_subplot(122, projection='3d')
-        self.plot_mat(mat_x, ax0)
-        self.plot_mat(mat_y, ax1)
-        self.plot_mat(mat_x_interp, ax0, color='red', title='x variation')
-        self.plot_mat(mat_y_interp, ax1, color='red', title='y variation')
+        self.plot_surface(mat_x_interp, ax0)
+        self.plot_surface(mat_y_interp, ax1)
+        # self.plot_mat(mat_x, ax0)
+        # self.plot_mat(mat_y, ax1)
+        # self.plot_mat(mat_x_interp, ax0, color='red', title='x variation')
+        # self.plot_mat(mat_y_interp, ax1, color='red', title='y variation')
         ax0.set_box_aspect([10, 10, 5])
         ax1.set_box_aspect([10, 10, 5])
         plt.show()
@@ -149,7 +126,4 @@ class Interpolation(LoadDatas):
         ax.set_zlabel(title)
         ax.set_title(title)
                 
-        
-if __name__=='__main__':
-    directory = 'datas'
-    Interpolation(directory)
+ 

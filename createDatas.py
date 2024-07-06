@@ -19,6 +19,7 @@ class DetectFace:
             self.get_sound(title=output_path)
             self.read_video()
             data_path = os.path.join(os.getcwd(), 'datas', 'pts_face_thomas.npy')
+            print('pts', len(self.pts))
             np.save(data_path, self.pts)
         
     def check_data(self):
@@ -77,6 +78,7 @@ class DetectFace:
         if len(pred) == 1:
             pred = pred[0]
             pts = np.array(pred['landmark_3d_68']).astype(int)
+            
         return pts
 
     def get_sound(self, title='_.mp4'):
@@ -87,14 +89,15 @@ class DetectFace:
         
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='Face Detection and Sound Extraction')
-    parser.add_argument('input', type=str, help='Input video filename located in the "videos" directory')
-    parser.add_argument('output', type=str, help='Output audio filename located in the "datas" directory')
+    # parser = argparse.ArgumentParser(description='Face Detection and Sound Extraction')
+    # parser.add_argument('input', type=str, help='Input video filename located in the "videos" directory')
+    # parser.add_argument('output', type=str, help='Output audio filename located in the "datas" directory')
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
-    input_path = args.input
-    output_path = args.output
-    print(input_path)
-
-    #DetectFace(input_path=input_path, output_path=output_path)
+    # input_path = args.input
+    # output_path = args.output
+    # print(input_path)
+    input_path = os.path.join(os.getcwd(), 'videos', 'short_thoma.mp4')
+    output_path = os.path.join(os.getcwd(), 'datas', 'audio_short_thoma.wav')
+    DetectFace(input_path=input_path, output_path=output_path)

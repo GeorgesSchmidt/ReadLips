@@ -2,111 +2,116 @@
 
 **IA de détection de la sémantique d'une phrase par analyse du mouvement des lèvres**
 
-L'objectif de ce dépôt est, dans un premier temps, de récolter et d'analyser les données nécessaires à la création de ce modèle. On analyse le mouvement des lèvres sur les images par rapport au temps (déroulé du film) en utilisant des modules de vision par ordinateur (InsightFace) et le son par des modules de NLP (interprétation du son).
 
-## **Data Extraction**
+Lorsque l'on lit sur les lèvres, on évalue visuellement les amplitudes d'ouvertures et de fermetures de la bouche afin de corréler cela avec des mots. 
 
-Le module `createData.py` reçoit un film en entrée et applique une détection de visage à l'aide d'InsightFace afin d'obtenir les points du visage, y compris les lèvres. InsightFace prédit 60 points de visage, toujours classés dans le même ordre.
+Des modèles d'IA tels que InsightFace permettent de détecter le visage en fournissant les coordonnées des points des yeux, du nez, du menton et des lèvres en sortie de prédiction. 
 
-![Lips Points](figure_frame_1.png)
+Si l'on veut créer une IA permettant de lire sur les lèvres, il faut corréler les données lèvres avec la sémentique (les mots) du fichier son. 
 
-Les lèvres sont représentées par les points de la liste entre les numéros 48 et 68.
+En filmant une interview courte de Thomas Pesquier (video fournie dans ce repo), on applique InsightFace sur les images afin de détecter les points des lèvres et on sépare le fichier son (.wav) afin de l'analyser. 
 
-Ce module sépare les images du son et crée en sortie un fichier `.npy` qui contient les coordonnées de ces points pour chaque image, soit une matrice de dimensions `(nb_images, nb_points, 3)`, de type `int`, ainsi qu'un fichier `.wav` qui contient le son.
+# 1 : Data extraction.
 
-La détection du visage avec InsightFace prend un certain temps, c'est pourquoi on extrait les données de cette manière afin de ne plus avoir à relancer l'extraction des données. Ces fichiers sont stockés dans le répertoire `Datas`.
+Le module `createData.py` prend ce film, détecte les coordonnées des lèvres à chaque image et stocke cette donnée dans un fichier `.npy`. Il splite le son et stocke ces 2 données dans le dossier `datas/`. 
 
-## **Data Cleaning Face**
+En effet, la détection du visage par InsightFace prend un certain temps. Ce module permet d'extraire les données sans avoir à relancer cette détection. 
 
-Le module `readLips.py` récupère les données afin d'évaluer le mouvement des lèvres durant le film. La matrice de points du fichier `.npy` a une dimension fixe dans sa largeur (60 points) mais une dimension variable dans sa hauteur (le nombre d'images du film).
+Les modules d'analyse du visage sont placés dans le dossier `face/`, ceux du son dans le dossier `sound/`. 
 
-### **1. Extraction des coordonnées x et y des lèvres**
+# 2 : Analyse du son. 
 
-On extrait les points des lèvres (`lips = pts[48:68]`) et on calcule le centre de la bouche (`center = (np.mean(x), np.mean(y))`). On sépare ensuite les coordonnées x et y afin d'obtenir deux matrices `mat_x` et `mat_y`, représentant respectivement les variations en x et en y pendant le film.
+Le module `soundAnalysis.py` prend le fichier `.wav`, prédit les mots et analyse le fichier son. 
 
-Ces coordonnées sont visualisées avec Matplotlib 3D avec pour axes :
-- **X** : la variable tau (2\*π) du module math.
-- **Y** : le temps (numéro d'image).
-- **Z** : la variation des coordonnées x ou y par rapport au centre de la bouche.
-
-En dessinant des lignes continues entre les points des lèvres, on remarque que la bouche est représentée par une double boucle. La première boucle définit les points du bord supérieur de la lèvre, la deuxième définit les points du bord inférieur de la lèvre. La courbe en x marque deux pics : un pour chaque groupe (bord supérieur et bord inférieur) des lèvres. 
-
-![Lips Points](coordLips.png)
-
-`mat_x` et `mat_y` représentent les variations des amplitudes durant le temps (nombre d'images). 
-
-![Lips Points](plot_3d_lips.png)
-
-En effet, le son sera caractérisé par des "mots" (amplitudes fortes) et des "silences" (amplitudes faibles).
-
-### **2. Interpolation des données : correction des dimensions**
-
-On applique à ces deux matrices (`mat_x` et `mat_y`) une interpolation afin de créer une matrice de dimension constante en hauteur et en largeur. On peut ainsi choisir les dimensions des points des lèvres par rapport au temps, aussi bien par rapport au nombre de points (largeur) qu'au nombre d'images (hauteur).
-
-Le module qui traite le son extrait les mots du fichier `.wav`. Cette interpolation permet donc de corréler les phases de mouvement des lèvres par rapport au nombre de mots.
-
-L'interpolation se fait d'abord sur le nombre de points, en passant de 20 points initialement à 100 points, ce qui permet d'obtenir une courbe plus lisse en sortie. Cette première interpolation s'effectue avec la fonction `np.interp`. Pour l'interpolation en hauteur, on utilise `gridData` de Scipy, passant ainsi de 1280 images à un nombre de mots (ici 100 pour l'exemple).
-
-On peut visualiser sous MatplotLib 3D le résultat de cette interpolation.
-
-![Lips Points](interpolation.png)
-
-### **3. Modele mathématique : 2D-DFT**
-
-Les amplitudes de mouvement des lèvres peuvent être représentées aisément avec une transformée de Fourier en deux dimensions (2D-DFT), très utilisée en traitement d'image. Cette transformée est particulièrement adaptée à la modélisation mathématique des amplitudes de mouvement. 
-
-On travaille alors avec des nombres complexes, où la partie réelle représente la variation en x et la partie imaginaire la variation en y. En calculant les amplitudes de ces nombres, on affiche l'image spectrale, ce qui permet d'observer les amplitudes fortes (au centre de l'image spectrale) et les amplitudes faibles (aux bords de l'image spectrale). En appliquant un masque à cette image, on supprime les amplitudes faibles.
-
-En sortie, on obtient un pourtour des lèvres lissé, donc plus propre schématiquement. Ce lissage est défini par l'ordre choisi pour la transformée de Fourier, autrement dit le nombre de nombres complexes que l'on choisit de garder.
-
-On obtient alors une transformée de Fourier représentant les amplitudes de mouvement des lèvres par rapport au temps, avec des dimensions de matrice fixes, définies par l'ordre choisi pour la transformée.
-
-Ce qui est intéressant avec cette interprétation par DFT, c'est qu'on peut définir une constante d'ordre, quel que soit le film, qui soit satisfaisante pour représenter le mouvement des lèvres.
-
-![Lips Points](fourier.png)
-
-Le fait de fixer le nombre de dimensions de la sortie permet aussi de préparer les données pour un apprentissage en deep learning.
-
-### **4. Interprétation du résultat de la DFT**
-
-Une transformée de Fourier est un modèle mathématique qui, comme tout modèle, modèlise des données par des coeficients. 
-
-![Lips Points](FourierFormula.png)
-
-Plus le nombre de coeficients est important `on parle d'ordre plutot que degres`, plus la fonction sera callée aux données. 
-
-Les premiers coeficients i=0 donne les coordonnées du centre d'inertie de la courbe. 
-
-Les coeficients a et b pour i=1 donne les amplitudes maximales et c'est ce qui nous intéresse pour l'analyse des lèvres. 
-
-Comme il s'agit d'un modèle 2D, on a 2 ordres : l'un pour la modélisation dans le sens de la hauteur (le temps) dit `order_h` et l'autre dans le sens de la largeur `order_w`. 
+La reconnaissance de la phrase s'effectue avec `pydub` qui fournit une chaine de charactères qui est la phrase prononcée. 
 
 
+Dans notre interview de Thomas, la phrase est :
 
-![Lips Points](order_w.png)
+`musique à diffuser un alien qui viendrait toquer à mon hublot et ben je sais pas je pense despacito pour le faire fuir`. 
 
-![Lips Points](order_h.png)
+Si l'on split cette string par rapport aux espaces entre les mots, on obtient un total de 23 mots. 
 
+Pour analyser le son en lui-même, on plot le son avec Matplotlib : on parle de waveform. 
 
-En effet, lorsqu'une personne parle pour émettre un son la bouche s'ouvre et l'amplitude en y augmente. 
-
-A l'inverse, lorsque la personne se tait, la bouche se ferme créant une amplitude en y plus faible. 
-
-Evidement, les amplitudes en x sont importantes aussi car elle représentent la largeur de l'ouverture de la bouche. 
-
-L'intérêt de la modélisation par Fourier est de pouvoir analyser les variations de ces amplitudes en évaluant les phases (dans le temps) où la bouche émet un son (forte amplitudes) et les phases où la bouche se tait (faibles amplitudes). 
+![Lips Points](pictures/waveform.png)
 
 
-## **Data Cleaning Sound**
+Si l'on observe ce signal, on apercoit des phases de faibles amplitudes et des phases de fortes amplitudes. 
 
-Le module `speechReco.py` permet d'analyser le fichier `.wav`. Il extrait les données du son et les représente par rapport au temps (durée du film), puis les affiche à l'écran. Il interprète ce son (SpeechRecognition) afin de créer une chaîne de caractères qui donne la sémantique de ce qui a été dit sur cette bande son. En splittant cette chaîne de caractères par rapport aux espaces entre les mots, on définit le nombre de "mots" et le nombre de silences ("esp").
+Les faibles amplitudes représentent les silences entre les mots qui sont, eux, représentés par les phases de fortes amplitudes. 
 
-![Lips Points](soundtrack_interp.png)
+On appliquant une transformée de Fourier `Fast Fourier Transform`, on peux détecter ces phases. 
 
-En appliquant une interpolation par `np.interp` sur le graphique du son, on obtient les phases de son par chacun des mots et des silences de la phrase prononcée. Enfin, une analyse par transformée de Fourier (FFT) permet de visualiser l'image spectrale du son. On visualise ainsi les sons forts (les mots) et les sons faibles (les silences). En supprimant les amplitudes faibles, on définit aussi un ordre constant, quel que soit le fichier son.
+![Lips Points](pictures/soundIntervals.png)
 
-![Lips Points](soundtrack.png)
 
-### **3. Synchronisation des données **
+# 3 : Analyse des lèvres. 
 
+InsightFace prédit 60 points de visage (landmarks). 
+
+Les lèvres sont les points de cette liste situés entre les index 48 et 68, soit 20 points. 
+
+![Lips Points](pictures/figure_frame_1.png)
+
+Pendant l'interview, le visage bouge. On corrige cela en évaluant les points représentant la largeur maximale de la bouche. En calculant le centre de cette droite et en tournant tous les points de la lèvre afin que cette droite devienne horizontale, on replace chaque image des lèvres les unes derrière les autres. 
+
+
+![Lips Points](lpictures/ips_3d.png)
+
+
+Si l'on veut corréler les images au son, il convient de faire une interpolation des lèvres afin d'otenir autant d'images que d'échantillons de son. Dans cet interview, le nombre d'échantillons de son est de 326340. 
+
+Pour la modélisation mathématique qui va suivre, on interpole aussi le nombre de points qui constituent les lèvres en pasant de 20 points à 50. 
+
+Donc si le film contient 1567 images, l'interpolation a pour objectif de passer d'une matrice de dimensions (1567, 20, 2) pour 1567 images, 20 points de 2 coordonnées (x et y) à une nouvelle matrice de dimensions (326340, 50, 2). 
+
+Le module `interpolation.py` permet cela en appliquant la méthode gridData de numpy. 
+
+Cette interpolation prend un peu de temps, c'est pourquoi ce module sauvegarde son résultat dans le fichier `mat_interp.npy` dans le dossier datas. 
+
+Les lèvres sont donc stockées dans une matrice data_lèvres de dimension (326340, 50, 2) soit 326340 images de 50 points de 2 coordonnées (x et y). 
+
+Cela permet de mieux appliquer la modélisation mathématique par transformée de Fourier. 
+
+# 4 : Modélisation mathématique des lèvres. 
+
+Comme nous voulons analyser des amplitudes, que ce soit pour les lèvres ou pour le son, le modèle le plus approprié est une transformée de Fourier. 
+
+Pour les lèvres, nous avons une matrice, nous appliquerons donc une 2D-DFT dont l'algorithme est fourni par openCV. 
+
+En effet, cette transformée est spécifique aux matrices car elle applique la transformée de Fourier aussi bien sur les rangées de la matrice que sur les colonnes. 
+
+En split dans un premier temps la matrice data_lèvres en 2 sous matrices `mat_x` et `mat_y`. 
+
+Si l'on considère un tour complet des lèvres comme étant $2\pi$, alors on peux représenter les variations de x et de y pour toutes les images avec Matplotlib3D. 
+
+![Lips Points](pictures/split_lips.png)
+
+Sur chacune de ces matrices, on calcule la transformée de Fourier (la 2D-DFT) et on visualise l'image spectrale, c'est-à-dire l'amplitude des nombres complexes par rapport au fréquences. 
+
+Cela nous permet de définir les dimensions du mask afin de ne garder que les hautes fréquences. 
+
+On ne présente ici que l'image spectrale de la magnitude en x. 
+
+![Lips Points](pictures/magnitude_x.png)
+
+Ce mask annule les faibles amplitudes selon des dimensions fixes : les ordres `ord_x` et `ord_y`. 
+
+`ord_x` va avoir pour effet de lisser les contours des lèvres. 
+
+`ord_y` va avoir pour effet de lisser les amplitudes. 
+
+Si l'on découpe les transformées de Fourier avec ce mask, on se retrouve avec des matrices beaucoup plus petites :  
+
+Pour `ord_x=5` et `ord_y=50000`, `four_x` et `four_y`, respectivement les transformées de `mat_x` et `mat_y`, ont une dimension de (100000, 10, 2) soit 8 fois plus petites. 
+
+En appliquant la DFT inverse, on retrouve les lèvres. 
+
+![Lips Points](pictures/result_DFT.png)
+
+
+# 5 : la synchronisation des images et du son.
+
+Maintenant que les données ont les mêmes dimension (il y a autant d'images que d'échantillons de son), on peut évaluer les variations des amplitudes des lèvres pendant une séquence donnée : un mot suivi d'un silence. 
 
