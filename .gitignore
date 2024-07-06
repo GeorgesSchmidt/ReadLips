@@ -1,0 +1,6 @@
+.venv/
+*.wav
+*.avi
+*.mp4
+oldCodes/
+datas/
