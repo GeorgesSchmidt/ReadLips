@@ -57,7 +57,7 @@ Les lèvres sont les points de cette liste situés entre les index 48 et 68, soi
 Pendant l'interview, le visage bouge. On corrige cela en évaluant les points représentant la largeur maximale de la bouche. En calculant le centre de cette droite et en tournant tous les points de la lèvre afin que cette droite devienne horizontale, on replace chaque image des lèvres les unes derrière les autres. 
 
 
-![Lips Points](lpictures/lips_3d.png)
+![Lips Points](pictures/lips_3d.png)
 
 
 Si l'on veut corréler les images au son, il convient de faire une interpolation des lèvres afin d'otenir autant d'images que d'échantillons de son. Dans cet interview, le nombre d'échantillons de son est de 326340. 
