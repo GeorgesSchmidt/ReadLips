@@ -2,5 +2,5 @@
 *.wav
 *.avi
 *.mp4
-oldCodes/
-datas/
+*.npy
+/oldCodes/
